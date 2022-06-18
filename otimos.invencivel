@@ -103,7 +103,7 @@ local autoDamage
 local autoCollect
 local autoUltSkip
 local reEquippingPets = false
-local equippingTeam = true
+local equippingTeam = false
 
 local bsec1
 local farmAllToggle
