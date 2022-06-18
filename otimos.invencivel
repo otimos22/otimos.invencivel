@@ -43,7 +43,7 @@ local WAIT_BEFORE_GETTING_ENEMIES = 1
 local NUM_BOSS_ATTACKERS = 24
 local HP_TO_SWAP_AT = 1e17
 local HP_THRESH_HOLD = 1e16
-local AUTO_EQUIP_TIME = 3000
+local AUTO_EQUIP_TIME = 300
 local CURRENT_TRIAL = ""
 
 local statCalc = require(RS.ModuleScripts.StatCalc)
@@ -102,8 +102,8 @@ local hardTrial
 local autoDamage
 local autoCollect
 local autoUltSkip
-local reEquippingPets = true
-local equippingTeam = false
+local reEquippingPets = false
+local equippingTeam = true
 
 local bsec1
 local farmAllToggle
@@ -719,13 +719,13 @@ do
 
         pSec3:addToggle("Toggle Speed", false, function(value)
             if value then
-                setPetSpeed(10)
+                setPetSpeed(20)
             else
                 setPetSpeed(1)
             end
         end)
 
-        local min = AUTO_EQUIP_TIME / 60
+        local min = AUTO_EQUIP_TIME / 90
         pSec4:addToggle("Auto re-equip pets (every " ..min.. " min)", false, function(value)
             autoReEquipPets = value
         end)
@@ -960,19 +960,19 @@ do
             autoRaid = value
         end)
 
-        hsec1:addToggle("Teleport to xx:15 raids", nil, function(value)
+        hsec1:addToggle("Teleport to xx:13 Raid", nil, function(value)
             raid15 = value
 
             if value then
-                GUI:Notify("Auto Raid", "Teleports every xx:14")
+                GUI:Notify("Auto Raid", "Teleports every xx:12")
             end
         end)
 
-        hsec1:addToggle("Teleport to xx:45 raids", nil, function(value)
+        hsec1:addToggle("Teleport to xx:43 raids", nil, function(value)
             raid45 = value
 
             if value then
-                GUI:Notify("Auto Raid", "Teleports every xx:44")
+                GUI:Notify("Auto Raid", "Teleports every xx:42")
             end
         end)
 
