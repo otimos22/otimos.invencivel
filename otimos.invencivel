@@ -43,7 +43,7 @@ local WAIT_BEFORE_GETTING_ENEMIES = 1
 local NUM_BOSS_ATTACKERS = 24
 local HP_TO_SWAP_AT = 1e17
 local HP_THRESH_HOLD = 1e16
-local AUTO_EQUIP_TIME = 300
+local AUTO_EQUIP_TIME = 3000
 local CURRENT_TRIAL = ""
 
 local statCalc = require(RS.ModuleScripts.StatCalc)
@@ -102,7 +102,7 @@ local hardTrial
 local autoDamage
 local autoCollect
 local autoUltSkip
-local reEquippingPets = false
+local reEquippingPets = true
 local equippingTeam = false
 
 local bsec1
