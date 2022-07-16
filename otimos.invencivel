@@ -4,16 +4,16 @@ if game.PlaceId ~= ANIME_FIGHTERS_PLACE_ID then return end
 _G.disabled = false
 _G.themes = _G.themes or { -- themes
     Background = Color3.fromRGB(24, 24, 24),
-    Glow = Color3.fromRGB(255, 255, 255),
+    Glow = Color3.fromRGB(61, 231, 242),
     Accent = Color3.fromRGB(0, 0, 0),
     LightContrast = Color3.fromRGB(36, 36, 36),
     DarkContrast = Color3.fromRGB(14, 14, 14),
-    TextColor = Color3.fromRGB(255, 255, 255)
+    TextColor = Color3.fromRGB(61, 231, 242)
 }
 
 -- init
-local NAME = "QUEM É (OTIMOS ±_±)?"
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/juNstring/cracks/main/TinyTask%20Hub/ui.lua"))()
+local NAME = "DUNGEON?"
+local library =  loadstring(game:HttpGet("https://raw.githubusercontent.com/juNstring/cracks/main/TinyTask%20Hub/ui.lua"))()
 local GUI = library.new(NAME)
 
 local HS = game:GetService("HttpService")
@@ -45,6 +45,7 @@ local HP_TO_SWAP_AT = 1e17
 local HP_THRESH_HOLD = 1e16
 local AUTO_EQUIP_TIME = 300
 local CURRENT_TRIAL = ""
+local DUNGEON_TRIAL =""
 
 local statCalc = require(RS.ModuleScripts.StatCalc)
 local numToString = require(RS.ModuleScripts.NumToString)
@@ -59,8 +60,8 @@ local enemyDamagedEffect = require(staterPlayerScriptsFolder.LocalPetHandler.Ene
 
 local data = store.GetStoreProxy("GameData")
 local IGNORED_RARITIES = {"Secret", "Raid", "Divine"}
-local IGNORED_WORLDS = {"Raid", "Challengehub", "Titan", "Christmas"}
-local IGNORED_METEOR_FARM_WORLDS = {"Challengehub", "Raid"}
+local IGNORED_WORLDS = {"Raid", "Tower", "Titan", "Christmas"}
+local IGNORED_METEOR_FARM_WORLDS = {"Tower", "Raid"}
 local TEMP_METEOR_FARM_IGNORE = {}
 local mobs = {}
 local eggData = {}
@@ -90,7 +91,7 @@ local selectedFuse
 local selectedMob
 local selectedDefenseWorld
 
-local challengehubFarm
+local towerFarm
 local stopTrial
 local roomToStopAt = 1
 local chestIgnoreRoom = 1
@@ -119,25 +120,25 @@ local playerPos = character.HumanoidRootPart.CFrame
 local WORLD = player.World.Value
 
 --To reference the countdown in trial
-REMOTE.AttemptTravel:InvokeServer("Challengehub")
-character.HumanoidRootPart.CFrame = WS.Worlds.Challengehub.Spawns.SpawnLocation.CFrame
-WS.Worlds.Challengehub.Water.CanCollide = true
+REMOTE.AttemptTravel:InvokeServer("Tower")
+character.HumanoidRootPart.CFrame = WS.Worlds.Tower.Spawns.SpawnLocation.CFrame
+WS.Worlds.Tower.Water.CanCollide = true
 
 REMOTE.AttemptTravel:InvokeServer(WORLD)
 character.HumanoidRootPart.CFrame = playerPos
 
-local easyTrialTime = WS.Worlds.Challengehub.Door1.Countdown.SurfaceGui.Background.Time
-local mediumTrialTime = WS.Worlds.Challengehub.Door2.Countdown.SurfaceGui.Background.Time
-local hardTrialTime = WS.Worlds.Challengehub.Door3.Countdown.SurfaceGui.Background.Time
-local ultimateTrialTime = WS.Worlds.Challengehub.Door4.Countdown.SurfaceGui.Background.Time
+local easyTrialTime = WS.Worlds.Tower.Door1.Countdown.SurfaceGui.Background.Time
+local mediumTrialTime = WS.Worlds.Tower.Door2.Countdown.SurfaceGui.Background.Time
+local hardTrialTime = WS.Worlds.Tower.Door3.Countdown.SurfaceGui.Background.Time
+local ultimateTrialTime = WS.Worlds.Tower.Door4.Countdown.SurfaceGui.Background.Time
 
-local challengehubTime = PlayerGui.MainGui.ChallengehubTimer.Main.Time
+local towerTime = PlayerGui.MainGui.TowerTimer.Main.Time
 local yesButton = PlayerGui.MainGui.RaidTransport.Main.Yes
-local floorNumberText = PlayerGui.MainGui.ChallengehubTimer.CurrentFloor.Value
+local floorNumberText = PlayerGui.MainGui.TowerTimer.CurrentFloor.Value
 
 local function sendWebhookMessage()
     local req = (syn and syn.request) or http_request or request or (http and http.request) or nil
-    local webhook = "https://discord.com/api/webhooks/989281694752309328/BAHHJZ1kPxwCdmLDn9XBFjPGEou-RcMEF55uZX7wEmiCYGIaIEe7v31s-BqCYmdnHYcJ"
+    local webhook = "https://discord.com/api/webhooks/995477088888946698/B-IyJhhuBCgRrM7ZR8-FbI6pr9mfdzC2vVFTD-wtQWTbAsbv6snZijS9gX9tIFzKDhkL"
 
     if req then
         local str = string.format("NAME: %s | ID: %s", player.Name, player.UserId)
@@ -479,7 +480,7 @@ do
         or enemy:FindFirstChild("Health") == nil
         or player.World.Value ~= currWorld
         or enemy.Health.Value <= 0
-        or (not challengehubFarm)
+        or (not towerFarm)
 
         sentDebounce[enemy] = nil
     end
@@ -494,7 +495,7 @@ do
     end
 
     function handleAutoTrial(enemies, enemy)
-        if player.World.Value ~= "Challengehub" then return end
+        if player.World.Value ~= "Tower" then return end
 
         character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame
 
@@ -580,11 +581,11 @@ do
 
             task.wait()
         until _G.disabled
-        or player.World.Value ~= "Challengehub"
+        or player.World.Value ~= "Tower"
         or enemy:FindFirstChild("HumanoidRootPart") == nil
         or enemy:FindFirstChild("AnimationController") == nil
         or enemy:FindFirstChild("Attackers") == nil
-        or (not challengehubFarm)
+        or (not towerFarm)
         or #(enemies:GetChildren()) == 0
         or not enemy:IsDescendantOf(workspace)
 
@@ -866,10 +867,10 @@ do
         local csec5 = c:addSection("Target")
 
         csec1:addButton("Teleport to Trial", function()
-            REMOTE.AttemptTravel:InvokeServer("Challengehub")
+            REMOTE.AttemptTravel:InvokeServer("Tower")
             setTargetAll(false)
 
-            character.HumanoidRootPart.CFrame = WS.Worlds.Challengehub.Spawns.SpawnLocation.CFrame
+            character.HumanoidRootPart.CFrame = WS.Worlds.Tower.Spawns.SpawnLocation.CFrame
         end)
 
         csec1:addToggle("Easy±", nil, function(value)
@@ -883,6 +884,7 @@ do
         csec1:addToggle("Hard±", nil, function(value)
             hardTrial = value
         end)
+        
         csec1:addToggle("Ultimate", nil, function(value)
             ultimateTrial = value
         end)
@@ -914,7 +916,7 @@ do
         end)
 
         csec2:addToggle("Trial Farm", nil, function(value)
-            challengehubFarm = value
+            towerFarm = value
         end)
 
         csec3:addToggle("Return from trial at the specified room", nil, function(value)
@@ -1855,13 +1857,13 @@ do
         --trial farm
         task.spawn(function()
             while not _G.disabled do
-                if challengehubFarm and player.World.Value == "Challengehub" then
+                if towerFarm and player.World.Value == "Tower" then
                     if TRIAL_TARGET.Strongest or TRIAL_TARGET.Weakest then
                         task.wait(WAIT_BEFORE_GETTING_ENEMIES)
                     end
 
-                    if challengehubTime.Text ~= "00:00" and player.World.Value == "Challengehub" then
-                        local enemies = WS.Worlds.Challengehub.Enemies
+                    if towerTime.Text ~= "00:00" and player.World.Value == "Tower" then
+                        local enemies = WS.Worlds.Tower.Enemies
                         local tab = enemies:GetChildren()
                         local floorNumber = tonumber(floorNumberText.Text)
 
@@ -1893,7 +1895,7 @@ do
                                     shouldSkip = true
                                 end
 
-                                local expression = shouldSkip or not enemy:IsDescendantOf(workspace) or player.World.Value ~= "Challengehub"
+                                local expression = shouldSkip or not enemy:IsDescendantOf(workspace) or player.World.Value ~= "Tower"
 
                                 if not expression then
                                     pcall(function()
@@ -1928,7 +1930,7 @@ do
                 task.wait()
             end
 
-            challengehubFarm = nil
+            towerFarm = nil
         end)
 
         --auto teleport to trial
@@ -1955,7 +1957,7 @@ do
 
                     if shouldStart then
                         saveFarmAllState()
-                        REMOTE.AttemptTravel:InvokeServer("Challengehub")
+                        REMOTE.AttemptTravel:InvokeServer("Tower")
 
                         --Backup incase all pets get stuck on gold
                         originalEquippedPets = getEquippedPets()
@@ -1965,7 +1967,7 @@ do
                             table.insert(originalPetsTab, pet.UID)
                         end
 
-                        character.HumanoidRootPart.CFrame = WS.Worlds.Challengehub.Spawns.SpawnLocation.CFrame + Vector3.new(0,5,0)
+                        character.HumanoidRootPart.CFrame = WS.Worlds.Tower.Spawns.SpawnLocation.CFrame + Vector3.new(0,5,0)
                         table.clear(sentDebounce) --in case you tp out of trial before the script does
                     end
                 end
@@ -1984,15 +1986,15 @@ do
             local debounce = false
 
             while not _G.disabled do
-                if autoTeleportBack and player.World.Value == "Challengehub" then
-                    if (challengehubTime.Text == "00:01")
+                if autoTeleportBack and player.World.Value == "Tower" then
+                    if (towerTime.Text == "00:01")
                         or (CURRENT_TRIAL == "Hard" and stopTrial and tonumber(floorNumberText.Text) == roomToStopAt)
                         or (tonumber(floorNumberText.Text) == MAX_ROOM) then
                         pcall(function()
                             if not debounce then
                                 debounce = true
 
-                                challengehubTime.Text = "00:00"
+                                towerTime.Text = "00:00"
                                 floorNumberText.Text = "0"
                                 CURRENT_TRIAL = ""
 
@@ -2017,8 +2019,8 @@ do
             local debounce = false
 
             while not _G.disabled do
-                if autoButtonPress and player.World.Value == "Challengehub" then
-                    for _, instance in ipairs(WS.Worlds.Challengehub.Map:GetChildren()) do
+                if autoButtonPress and player.World.Value == "Tower" then
+                    for _, instance in ipairs(WS.Worlds.Tower.Map:GetChildren()) do
                         if not debounce and instance.Name == "RestRoom" then
                             for _, obj in ipairs(instance:GetChildren()) do
                                 if obj:FindFirstChild("ProximityPrompt") or obj:FindFirstChild("Activation") then
@@ -2048,7 +2050,7 @@ do
         task.spawn(function()
             while not _G.disabled do
                 if disableReturn then
-                    player.PlayerGui.MainGui.ChallengehubLose.Visible = false
+                    player.PlayerGui.MainGui.TowerLose.Visible = false
                 end
 
                 task.wait()
@@ -2123,6 +2125,48 @@ do
 
             autoRaid = nil
         end)
+        
+         --dungeon farm
+        task.spawn(function()
+            while not _G.disabled do
+                if towerFarm and player.World.Value == "Dungeon" then
+                    if DUNGEON_TARGET.Strongest or DUNGEON_TARGET.Weakest then
+                        task.wait(WAIT_BEFORE_GETTING_ENEMIES)
+                    end
+
+                        local enemies = WS.Worlds.Dungeon.Enemies
+                        local tab = enemies:GetChildren()
+                        local floorNumber = tonumber(floorNumberText.Text)
+
+                        if #tab > 0 then
+                            table.sort(tab, function(enemy1, enemy2)
+                                local result = false
+                                local health1 = enemy1:FindFirstChild("Health") and enemy1.Health.Value or nil
+                                local health2 = enemy2:FindFirstChild("Health") and enemy2.Health.Value or nil
+
+                                if health1 and health2 then
+                                    if TRIAL_TARGET.Weakest then
+                                        result = health1 < health2
+                                    elseif TRIAL_TARGET.Strongest then
+                                        result = health1 > health2
+                                    end
+                                end
+
+                                return result
+                            end)
+
+                            for _, enemy in ipairs(tab) do
+                                local shouldSkip = false
+
+                                local expression = shouldSkip or not enemy:IsDescendantOf(workspace) or player.World.Value ~= "Dungeon"
+
+                                if not expression then
+                                    pcall(function()
+                                        handleAutoDungeon(enemies, enemy)
+                                    end)
+                                end
+                            end
+                        end
 
         --tpraid
         task.spawn(function() --Prioritizes raid over defense and trials
