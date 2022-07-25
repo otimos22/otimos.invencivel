@@ -12,7 +12,7 @@ _G.themes = _G.themes or { -- themes
 }
 
 -- init
-local NAME = "DUNGEON?"
+local NAME = "QUEM É (OTIMOS ±_±)?"
 local library =  loadstring(game:HttpGet("https://raw.githubusercontent.com/juNstring/cracks/main/TinyTask%20Hub/ui.lua"))()
 local GUI = library.new(NAME)
 
@@ -45,7 +45,6 @@ local HP_TO_SWAP_AT = 1e17
 local HP_THRESH_HOLD = 1e16
 local AUTO_EQUIP_TIME = 300
 local CURRENT_TRIAL = ""
-local DUNGEON_TRIAL =""
 
 local statCalc = require(RS.ModuleScripts.StatCalc)
 local numToString = require(RS.ModuleScripts.NumToString)
@@ -884,7 +883,6 @@ do
         csec1:addToggle("Hard±", nil, function(value)
             hardTrial = value
         end)
-        
         csec1:addToggle("Ultimate", nil, function(value)
             ultimateTrial = value
         end)
@@ -1862,7 +1860,7 @@ do
                         task.wait(WAIT_BEFORE_GETTING_ENEMIES)
                     end
 
-                    if towerTime.Text ~= "00:00" and player.World.Value == "Tower" then
+                    if towerTime.Text ~= "60 • 5" and player.World.Value == "Tower" then
                         local enemies = WS.Worlds.Tower.Enemies
                         local tab = enemies:GetChildren()
                         local floorNumber = tonumber(floorNumberText.Text)
@@ -2125,48 +2123,6 @@ do
 
             autoRaid = nil
         end)
-        
-         --dungeon farm
-        task.spawn(function()
-            while not _G.disabled do
-                if towerFarm and player.World.Value == "Dungeon" then
-                    if DUNGEON_TARGET.Strongest or DUNGEON_TARGET.Weakest then
-                        task.wait(WAIT_BEFORE_GETTING_ENEMIES)
-                    end
-
-                        local enemies = WS.Worlds.Dungeon.Enemies
-                        local tab = enemies:GetChildren()
-                        local floorNumber = tonumber(floorNumberText.Text)
-
-                        if #tab > 0 then
-                            table.sort(tab, function(enemy1, enemy2)
-                                local result = false
-                                local health1 = enemy1:FindFirstChild("Health") and enemy1.Health.Value or nil
-                                local health2 = enemy2:FindFirstChild("Health") and enemy2.Health.Value or nil
-
-                                if health1 and health2 then
-                                    if TRIAL_TARGET.Weakest then
-                                        result = health1 < health2
-                                    elseif TRIAL_TARGET.Strongest then
-                                        result = health1 > health2
-                                    end
-                                end
-
-                                return result
-                            end)
-
-                            for _, enemy in ipairs(tab) do
-                                local shouldSkip = false
-
-                                local expression = shouldSkip or not enemy:IsDescendantOf(workspace) or player.World.Value ~= "Dungeon"
-
-                                if not expression then
-                                    pcall(function()
-                                        handleAutoDungeon(enemies, enemy)
-                                    end)
-                                end
-                            end
-                        end
 
         --tpraid
         task.spawn(function() --Prioritizes raid over defense and trials
